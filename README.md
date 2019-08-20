@@ -2,7 +2,7 @@
 ##### 2019 Hartcode program (JS Bootcamp project)
 #### Author : Suriya N Rajamani
 
-![myLists] (public/images/learningIsFunReadMe.png)
+![WebsitePromo](public/images/learningIsFunReadMe.png)
 
 ## Purpose:
 Help Students and Parents to know about the courses offered in the learning Center and get educated by registering to those courses.
