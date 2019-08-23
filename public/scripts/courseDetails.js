@@ -7,11 +7,22 @@
 /* window onload/ready function to load page with course details and assign reference to event handler */
 $(function() {
     let urlParams = new URLSearchParams(location.search);
-    let courseId = urlParams.get("id");
+    let tempId = urlParams.get("id");
+    let isDelStudent;
+    //Usage of passing parms in URL to drive multiple actions, in this case, it is with 'del' and 'id'
+    delOprlength = tempId.indexOf('del');
+    if (delOprlength != -1) {
+        courseId = tempId.substr(0, delOprlength);
+        isDelStudent = true;
+    } else {
+        courseId = tempId;
+    }
     // course id is pulled from url for server call
     let errorMsgIdField = $("#errorMsgId");
     // set it as button to have validation in the future if there are no more slots available
     let registerBtnField = $("#registerBtn");
+    let delBtnField = $("delBtn");
+    let cancelBtnField = $("cancelBtn");
 
     // Store the JSON data in javaScript objects.  
     $.getJSON("/api/courses/" + courseId, function(data) {
@@ -20,7 +31,8 @@ $(function() {
         .done(function() {
             // upon successful AJAX call perform the below
             loadCourseDetails(courseDetails);
-            loadStudentList(courseDetails, errorMsgIdField)
+            loadStudentList(courseDetails, errorMsgIdField, courseId)
+
         })
         .fail(function() {
             // upon failure response, send message to user
@@ -29,13 +41,19 @@ $(function() {
             errorMsgIdField.addClass("badInput");
         });
 
+    // Modal changes
+    $('#unRegisterDiv').on('shown.bs.modal', function() {
+        console.log("true");
+        $("#unRegisterDiv").modal(focus);
+    });
+
+
     // Register button event handler
     registerBtnField.on("click", function() {
         // Redirect to registration page upon clicking on registration and opens up on the same page
         let regUrl = "register.html?id=" + courseId;
         window.location.replace(regUrl, "_self");
     })
-
 })
 
 /* function is to load registered student details during onload process
@@ -43,7 +61,7 @@ $(function() {
  * @param errorMsgIdField (jquery reference to error message id) - sets error/informational message
  * calls: createTableVerticalHead(), createTableBody()
  */
-function loadStudentList(courseDetails, errorMsgIdField) {
+function loadStudentList(courseDetails, errorMsgIdField, courseId) {
     let table = $("#studentsList");
     // set class for table through bootstrap 4
     table.addClass("table container table-responsive table-striped mt-2");
@@ -59,9 +77,55 @@ function loadStudentList(courseDetails, errorMsgIdField) {
         createTableBody(table, tableBodyId);
         // Run through student object array and populate student registered list table
         $.each(courseDetails.Students, function(key, value) {
-            table.append("<tr><td>" + value.StudentName + "</td><td>" + value.Email + "</td></tr>");
+            // let anchorId = 'a' + courseId + key;
+            // let uri = 'unregister.html?id=' + courseId + '&studentname=' + value.StudentName + '&email=' + value.Email;
+            // uri = encodeURI(uri);
+            // table.append("<tr><td>" + value.StudentName + "</td><td>" + value.Email + "</td><td><a id='" + anchorId + "' class='btn-sm btn-danger' href='" + uri + "'><i class='fa fa-remove'></i></a></td></tr>");
+            // // Unregister Click event handler assignment
+            // $(anchorId).on("click", function() {
+            //     deleteStudent();
+            // })
+            let anchorId = 'a' + courseId + key;
+            table.append("<tr><td>" + value.StudentName + "</td><td>" + value.Email + "</td><td><a id='" + anchorId + "' class='btn-sm btn-danger' data-toggle='modal' data-target='#unRegisterDiv' href=#><i class='fa fa-remove'></i></a></td></tr>");
+            // Unregister Click event handler assignment
+            $("#" + anchorId).on("click", function() {
+                // Modal pop up and deletion for unregistration
+                $("#courseid").val(courseDetails.CourseId);
+                $("#studentname").val(value.StudentName);
+                $("#email").val(value.Email);
+
+                // Cancel button event handler assignment for modal and goes back to same delted item 
+                $("#cancelBtn").on("click", function() {
+                    let regUrl = "details.html?id=" + $("#courseid").val();
+                    window.location.replace(regUrl, "_self");
+                });
+                // Delete button event handler (goes back to courses details page)
+                $("#delBtn").on("click", function() {
+                    deleteStudent();
+                });
+            })
         })
     }
+}
+
+// In-progress
+function deleteStudent() {
+    // AJAX call to send the form data to server upon serialization 
+    let formCollection = $("#unRegisterForm");
+    $.post("/api/unregister", $("#unRegisterForm").serialize(),
+            function(data) {
+                let regUrl = "details.html?id=" + $("#courseid").val();
+                window.location.replace(regUrl);
+            })
+        .done(function() {
+            console.log("Success");
+        })
+        .fail(function() {
+            errorMsg = "Failure to get server data, please retry"
+            errorMsgIdField.html(errorMsg);
+            errorMsgIdField.addClass("badInput");
+        });
+    return false;
 }
 
 /* function is to load course details during onload in the dropdown
@@ -151,6 +215,6 @@ function createStudentTableHead(table, tableHeadId) {
     // check for table head, if does not exist, create it.
     let thead = $(tableHeadId);
     if (thead.length == 0) {
-        table.append("<thead id='" + tableHeadId + "'><tr><th>Student Name</th><th>E-mail</th></tr></thead>");
+        table.append("<thead id='" + tableHeadId + "'><tr><th>Student Name</th><th>E-mail</th><th>Action</th></tr></thead>");
     }
 }

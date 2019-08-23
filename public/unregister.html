@@ -18,7 +18,7 @@
     <!-- custom css-->
     <link rel="stylesheet" href="css/sites.css" />
 
-    <title>NaturalLearningIsFun-CourseDetails</title>
+    <title>NaturalLearningIsFun-studentUnRegister</title>
 </head>
 
 <body>
@@ -35,7 +35,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="courses.html">Courses</a>
                 </li>
-                <!-- Details page is not shown as active icon as intended to retain the course ID data-->
+                <!-- register page is not shown as active icon as intended to carry the field-->
             </ul>
         </div>
     </nav>
@@ -55,69 +55,38 @@
     <main>
         <div class="container">
             <section>
-                <h2 class="font-italic">Course Details</h2>
-                <form class="form-group" id="courseDetailsForm" action="details.html" target="_self">
-                    <!-- dynamically course detail table is populated during onload from server-->
-                    <div class="row justify-content-center">
-                        <div>
-                            <table id="coursesDetails" class="mt-2">
-                            </table>
-                        </div>
+                <h2 class="font-italic">Student UnRegistration: Enter following details</h2>
+
+                <!-- submit button is not used in submit button, as we need some action needs to be done upon submission-->
+                <form class="form-group" id="UnRegisterForm" action="#" target="_self" method="GET">
+                    <!-- Dynamically value is set and user entry is prohibited-->
+                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
+                        <label class="d-none d-md-inline col-md-3" for="courseid">Course ID</label>
+                        <input type="text" id="courseid" name="courseid" class="d-inline form-control col-md-6" readonly>
                     </div>
+                    <!-- User Inputs-->
+                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
+                        <label class="d-none d-md-inline col-md-3" for="studentname">Student Name</label>
+                        <input type="text" id="studentname" name="studentname" class="d-inline form-control col-md-6" placeholder="Enter Student Name" readonly>
+                    </div>
+                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
+                        <label class="d-none d-md-inline col-md-3" for="email">Email</label>
+                        <input type="text" id="email" name="email" class="d-inline form-control col-md-6" placeholder="Enter Email" readonly>
+                    </div>
+                    <!-- submit button is used to send the data through javascript-->
                     <div class="row justify-content-center">
                         <div class="mt-3 col-md-2">
-                            <!-- Redirect to register page upon clicking register button-->
-                            <button id="registerBtn" class="btn btn-sm btn-block btn-primary btn-info" type="button">Register</button>
+                            <button id="submitBtn" class="btn btn-sm btn-block btn-primary btn-info" type="button">Submit</button>
                         </div>
-                    </div>
-                    <div>
-                        <h2 class="font-italic">Registered Students List</h2>
-                    </div>
-                    <div class="row justify-content-center">
-                        <div>
-                            <!-- dynamically student detail table is populated during onload from server, if data exists-->
-                            <table id="studentsList" class="mt-2">
-                            </table>
+                        <!-- using it as button rather than reset, as it resets the readonly field which holds the id as well-->
+                        <div class="mt-3 col-md-2">
+                            <button id="cancelBtn" class="btn btn-sm btn-block btn-primary btn-info" type="button">Cancel</button>
                         </div>
                     </div>
                     <!-- Error block-->
                     <p id="errorMsgId">
                     </p>
                 </form>
-                <!-- Modal for Student Unregistration page-->
-                <div class="modal fade modal-lg" id="unRegisterDiv" tabindex="-1" role="dialog" aria-labelledby="unRegisterDivLabel" aria-hidden="true">
-                    <div class="modal-dialog modalSize" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="unRegisterDivLabel">Student UnRegistration</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                        </button>
-                            </div>
-                            <div class="modal-body">
-                                <form target="_self" id="unRegisterForm">
-                                    <!-- Dynamically populate the following fields during Modal load-->
-                                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
-                                        <label class="d-none d-md-inline col-md-3" for="courseid">Course ID</label>
-                                        <input type="text" id="courseid" name="courseid" class="d-inline form-control col-md-6" readonly>
-                                    </div>
-                                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
-                                        <label class="d-none d-md-inline col-md-3" for="studentname">Student Name</label>
-                                        <input type="text" id="studentname" name="studentname" class="d-inline form-control col-md-6" placeholder="Enter Student Name" readonly>
-                                    </div>
-                                    <div class="row col-md-8 mt-1 form-inline justify-content-center">
-                                        <label class="d-none d-md-inline col-md-3" for="email">Email</label>
-                                        <input type="text" id="email" name="email" class="d-inline form-control col-md-6" placeholder="Enter Email" readonly>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" id="cancelBtn" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="button" id="delBtn" class="btn btn-primary" data-dismiss="modal">Confirm</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
         </div>
     </main>
@@ -157,9 +126,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js " integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q " crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js " integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl " crossorigin="anonymous"></script>
 
-
     <!-- Custom JavaScripts (None)-->
-    <script src="scripts/courseDetails.js"></script>
+    <script src="scripts/studentUnregister.js"></script>
 
 </body>
 

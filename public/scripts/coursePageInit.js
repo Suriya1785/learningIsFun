@@ -6,7 +6,6 @@
 /* Ready event during onload 
  */
 $(function() {
-
     // Assign reference to required field for processing
     const selectCategoryListField = $("#selectCategoryList");
     let errorMsgIdField = $("#errorMsgId");
@@ -22,33 +21,80 @@ $(function() {
         })
         // on failure, Request user to retry
         .fail(function() {
-            console.log("failure");
             errorMsg = "Failure to get server data, please retry"
             errorMsgIdField.html(errorMsg);
             errorMsgIdField.addClass("badInput");
+            $("#courseslist").empty();
         });
 
+    // Event handler function to go to addCourse.html upon clicking on addNew Course
+
+    $("#addCourseBtn").on("click", function() {
+        // Redirect to add Course page upon clicking on add Course buttong and opens up on the same page
+        let addCourseUrl = "addCourse.html";
+        window.location.replace(addCourseUrl, "_self");
+    })
 
     //Event handler function to assign for onchange
     selectCategoryListField.on("change", function() {
         // validate user inputs
         let isValid = checkUserInput(selectCategoryListField, errorMsgIdField);
         if (isValid) {
-            //JSON call to get list of courses by selection category
-            $.getJSON(("/api/courses/bycategory/" + selectCategoryListField.val()), function(data) {
-                    listOfCoursesObjects = data;
-                })
-                .done(function() {
-                    // on success, build the list of available courses for selected category
-                    listCourses(listOfCoursesObjects);
-                })
-                .fail(function() {
-                    // on failure, build informational message to user
-                    errorMsg = "Failure to get server data, please retry"
-                    errorMsgIdField.html(errorMsg);
-                    errorMsgIdField.addClass("badInput");
-                });
             $("#errorMsgId").empty();
+            if (selectCategoryListField.val() == "viewAll") {
+                //JSON call to get list of all courses
+                $.getJSON(("/api/courses"), function(data) {
+                        listOfCoursesObjects = data;
+                    })
+                    .done(function() {
+                        // on success, build the list of available courses for selected category
+                        listCourses(listOfCoursesObjects);
+                    })
+                    .fail(function(jqXHR) {
+                        // on failure, build informational message to user and clear the previous results
+                        if (jqXHR.status == 404) {
+                            errorMsg = "Server Data file not found, please hold on"
+                            errorMsgIdField.html(errorMsg);
+                            errorMsgIdField.addClass("badInput");
+                            $("#courseslist").empty();
+                        } else {
+                            errorMsg = "Failure to get server data, please retry"
+                            errorMsgIdField.html(errorMsg);
+                            errorMsgIdField.addClass("badInput");
+                            $("#courseslist").empty();
+                        }
+
+                        // errorMsg = "Failure to get server data, please retry"
+                        // errorMsgIdField.html(errorMsg);
+                        // errorMsgIdField.addClass("badInput");
+                        // $("#courseslist").empty();
+                    });
+
+            } else {
+                //JSON call to get list of courses by selection category
+                $.getJSON(("/api/courses/bycategory/" + selectCategoryListField.val()), function(data) {
+                        listOfCoursesObjects = data;
+                    })
+                    .done(function() {
+                        // on success, build the list of available courses for selected category
+                        listCourses(listOfCoursesObjects);
+                    })
+                    .fail(function(jqXHR) {
+                        // on failure, build informational message to user and clear the previous results
+                        if (jqXHR.status == 404) {
+                            errorMsg = "Server Data file not found, please hold on"
+                            errorMsgIdField.html(errorMsg);
+                            errorMsgIdField.addClass("badInput");
+                            $("#courseslist").empty();
+                        } else {
+                            errorMsg = "Failure to get server data, please retry"
+                            errorMsgIdField.html(errorMsg);
+                            errorMsgIdField.addClass("badInput");
+                            $("#courseslist").empty();
+                        }
+
+                    });
+            }
         } else {
             // Clear the course List table, if there are errors
             $("#courseslist").empty();
@@ -78,9 +124,11 @@ function listCourses(listOfCoursesObjects) {
     createTableHead(table);
     createTableBody(table);
     // Build table course list
+    // let tbodyId = $("#coursesTbodyId");
     $.each(listOfCoursesObjects, function(key, value) {
         table.append("<tr><td>" + value.Title + "</td><td>" + value.Location + "</td><td>" + value.StartDate + "</td>" +
-            "<td><a class='btn-sm btn-info' href='details.html?id=" + value.CourseId + "'>View Details</a></td>");
+            "<td><a class='btn-sm btn-info' href='details.html?id=" + value.CourseId + "'>View Details</a></td>" +
+            "<td><a class='btn-sm' href='editCourse.html?id=" + value.CourseId + "'><i class='fa fa-pencil text-info'></i></a></td></tr>");
     })
 }
 
@@ -107,7 +155,7 @@ function createTableBody(table) {
 function createTableHead(table) {
     let thead = $("thead");
     if (thead.length == 0) {
-        table.append("<thead><tr><th>Title</th><th>Location</th><th>Start Date</th><th>More Info</th></tr></thead>");
+        table.append("<thead><tr><th>Title</th><th>Location</th><th>Start Date</th><th>More Info</th><th>Actions</th></tr></thead>");
     }
 }
 

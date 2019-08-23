@@ -26,6 +26,10 @@
     #courseTbodyId {
         font-size: 100%;
     }
+    
+    .modalSize {
+        max-width: 600px!important;
+    }
     /* Apply table width for nice view for phone number and other fields*/
     /* .studentColTwidth {
         width: 90%;
