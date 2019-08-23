@@ -8,32 +8,34 @@ $(function() {
     // Read URL and get the user selection to build the courseid
     let urlParams = new URLSearchParams(location.search);
     let courseid = urlParams.get("id");
+    let email = urlParams.get("email");
+    let studentname = urlParams.get("studentname");
     let errorMsgIdField = $("#errorMsgId");
     // Set course ID in registration form by catching it from URL during onload
     $("#courseid").val(courseid);
+    $("#studentname").val(studentname);
+    $("#email").val(email);
+
     // set it as button to have validation in the future if there are no more slots available
     let submitBtnField = $("#submitBtn");
-    let resetBtnField = $("#resetBtn");
+    let cancelBtnField = $("#cancelBtn");
 
     //Submit button event handler
-    submitBtnField.on("click", sendRegistrationForm);
+    submitBtnField.on("click", sendUnRegistrationForm);
 
-    // Reset button event handler
-    resetBtnField.on("click", function() {
-        // jquery does not have any reset method, get the form through jquery and reset through javascript
-        $("#registerForm").get(0).reset();
-        // upon reset, set the courseid value
-        $("#courseid").val(courseid);
-        $("#errorMsgId").empty();
+    // Cancel button event handler (goes back to courses page)
+    cancelBtnField.on("click", function() {
+        // Redirect to course page upon clicking on cancel button and opens up on the same page
+        let regUrl = "details.html?id=" + courseid;
+        window.location.replace(regUrl, "_self");
     })
 });
-
 
 /* function is to send the user entered registration form to server
  * @param: None
  * Calls: None
  */
-function sendRegistrationForm() {
+function sendUnRegistrationForm() {
     // following did not follow camelCase, as name attribute expected 
     let courseid = $("#courseid").val();
     let inputStudentName = $("#studentname").val();
@@ -44,7 +46,7 @@ function sendRegistrationForm() {
     let isDataValid = validateForm(inputStudentName, inputEmail, errorMsgIdField);
     if (isDataValid) {
         // AJAX call to send the form data to server upon serialization 
-        $.post("/api/register", $("#registerForm").serialize(),
+        $.post("/api/unregister", $("#UnRegisterForm").serialize(),
                 function(data) {
                     let regUrl = "details.html?id=" + courseid;
                     window.location.replace(regUrl);
